@@ -1,3 +1,4 @@
 node_modules/
 data/words.sqlite-wal
 data/words.sqlite-shm
+data/words.sqlite
