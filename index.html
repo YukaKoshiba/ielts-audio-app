@@ -1,117 +1,47 @@
 <!doctype html>
+<!--
+  Home screen: today's word count, progress stats, and the four study
+  mode entry points. Each mode now lives on its own page (learn.html,
+  review.html, quiz.html, audio.html) instead of being a hidden
+  <section> toggled by JS, so every mode has its own URL and a much
+  smaller script to load.
+-->
 <html lang="ja">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f7f4ef">
 <title>IELTS Vocabulary — Day 1</title>
-<style>
-:root{--bg:#f7f4ef;--card:#fff;--ink:#222;--muted:#777;--accent:#d96f4f;--accent2:#334b5c;--line:#e7dfd5;--good:#3d8b63;--mid:#c58a27;--bad:#b85b54}
-*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Hiragino Kaku Gothic ProN",sans-serif}
-button{font:inherit} .app{max-width:720px;margin:auto;min-height:100vh;padding:18px 16px 40px}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.logo{font-weight:800;font-size:20px}.day{font-size:12px;color:var(--muted);background:#eee8df;padding:6px 10px;border-radius:999px}
-.screen{display:none}.screen.active{display:block}
-.hero{padding:20px 4px 12px}.hero h1{font-size:30px;margin:0 0 8px}.hero p{color:var(--muted);line-height:1.7;margin:0}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
-.menu{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:20px;text-align:left;min-height:120px;cursor:pointer;box-shadow:0 4px 18px #00000008}
-.menu strong{display:block;font-size:18px;margin-bottom:8px}.menu span{font-size:13px;color:var(--muted);line-height:1.5}
-.primary{width:100%;border:0;border-radius:16px;background:var(--accent);color:white;padding:15px;font-weight:700;cursor:pointer}
-.secondary{border:1px solid var(--line);background:white;border-radius:14px;padding:11px 14px;cursor:pointer}
-.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.back{border:0;background:none;color:var(--accent2);font-weight:700;padding:6px 0;cursor:pointer}
-.progress{height:6px;background:#e8e0d6;border-radius:9px;overflow:hidden;margin:8px 0 22px}.progress i{display:block;height:100%;background:var(--accent);transition:.2s}
-.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px 22px;box-shadow:0 8px 30px #00000008}
-.num{font-size:12px;color:var(--muted);margin-bottom:8px}.word{font-size:40px;font-weight:800;letter-spacing:-1px}.meaning{font-size:20px;margin-top:12px}.example{margin-top:22px;font-size:18px;line-height:1.65}.translation{margin-top:8px;color:var(--muted);line-height:1.7}
-.audioRow{display:flex;gap:8px;margin-top:18px}.audioRow button{flex:1}
-.actions{display:flex;gap:8px;margin-top:22px}.actions button{flex:1}
-.rate{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}.rate button{border:0;border-radius:14px;padding:13px;color:white;cursor:pointer;font-weight:700}.good{background:var(--good)}.mid{background:var(--mid)}.bad{background:var(--bad)}
-.modeBox{background:#f1ece5;border-radius:16px;padding:12px 14px;margin-bottom:14px;font-size:13px;line-height:1.5}.modeBox b{font-size:15px}
-.recall{min-height:180px;display:flex;align-items:center;justify-content:center;text-align:center;border:2px dashed #ddd2c6;border-radius:18px;margin-top:16px;padding:20px}
-.recall .prompt{font-size:27px;font-weight:800}.answer{display:none}.answer.show{display:block}
-.quizQ{font-size:24px;font-weight:800;line-height:1.5}.choices{display:grid;gap:10px;margin-top:18px}.choice{border:1px solid var(--line);background:white;border-radius:14px;padding:14px;text-align:left;cursor:pointer}.choice.correct{border-color:var(--good);background:#eef7f1}.choice.wrong{border-color:var(--bad);background:#fbefed}.feedback{margin-top:14px;font-weight:700;min-height:24px}
-.stat{display:flex;gap:8px;margin:14px 0}.stat div{flex:1;background:#f1ece5;border-radius:14px;padding:12px;text-align:center}.stat b{display:block;font-size:20px}.stat small{color:var(--muted)}
-.audioOnly{position:fixed;inset:0;background:#17232c;color:white;z-index:10;display:none;align-items:center;justify-content:center;padding:28px}.audioOnly.active{display:flex}.ao{width:min(520px,100%);text-align:center}.ao .label{color:#b9c5cc;font-size:13px}.ao .big{font-size:42px;font-weight:800;margin:20px 0}.ao .status{min-height:50px;color:#dbe4e9;line-height:1.7}.ao button{margin-top:22px;width:100%}
-.notice{font-size:12px;color:var(--muted);line-height:1.6;margin-top:16px}
-@media(max-width:520px){.grid{grid-template-columns:1fr}.word{font-size:34px}.hero h1{font-size:27px}}
-</style>
+<link rel="stylesheet" href="css/tailwind.css">
 </head>
 <body>
-<div class="app">
-<header><div class="logo">IELTS Vocabulary</div><div class="day">DAY 1 · 1781–1790</div></header>
+<div class="app-shell">
+  <header class="app-header">
+    <div class="app-logo">IELTS Vocabulary</div>
+    <div id="dayBadge" class="app-day-badge">DAY 1 · 1781–1790</div>
+  </header>
 
-<section id="home" class="screen active">
-<div class="hero"><h1>今日は10語。</h1><p>「見る」だけではなく、<b>思い出す時間</b>を入れて覚えるDay 1プロトタイプです。</p></div>
-<div class="stat"><div><b id="learnedCount">0</b><small>◎ 定着</small></div><div><b id="reviewCount">10</b><small>今日の10語</small></div><div><b id="scoreCount">0</b><small>クイズ正解</small></div></div>
-<div class="grid">
-<button class="menu" onclick="startLearn()"><strong>📖 覚える</strong><span>英単語・意味・例文を確認</span></button>
-<button class="menu" onclick="startReview()"><strong>🔁 復習</strong><span>Recall → Answer → ◎△×</span></button>
-<button class="menu" onclick="startAudio()"><strong>🎧 音声学習</strong><span>画面を見ずに10語を自動再生</span></button>
-<button class="menu" onclick="startQuiz()"><strong>✏️ クイズ</strong><span>英→日 / 日→英</span></button>
-</div>
-<p class="notice">音声は提供された 1781–1800 の音声から、Day 1の10語分を切り出しています。日本語音声はiPhone/iPadの音声読み上げを使用します。</p>
-</section>
+  <section class="hero">
+    <h1>今日は10語。</h1>
+    <p>「見る」だけではなく、<b>思い出す時間</b>を入れて覚えるDay 1プロトタイプです。</p>
+  </section>
 
-<section id="learn" class="screen">
-<div class="topbar"><button class="back" onclick="goHome()">← Home</button><b>覚えるモード</b><span id="learnNum"></span></div>
-<div class="progress"><i id="learnProg"></i></div><div class="card" id="learnCard"></div>
-</section>
+  <div class="stat-row">
+    <div class="stat-tile"><b id="learnedCount">0</b><small>◎ 定着</small></div>
+    <div class="stat-tile"><b id="reviewCount">10</b><small>今日の10語</small></div>
+    <div class="stat-tile"><b id="scoreCount">0</b><small>クイズ正解</small></div>
+  </div>
 
-<section id="review" class="screen">
-<div class="topbar"><button class="back" onclick="goHome()">← Home</button><b>復習モード</b><span id="reviewNum"></span></div>
-<div class="progress"><i id="reviewProg"></i></div><div class="modeBox"><b>Recall → Answer</b><br>まず答えを頭の中で思い出してから「答えを見る」。</div>
-<div class="card" id="reviewCard"></div>
-</section>
+  <nav class="menu-grid">
+    <a class="menu-btn" href="learn.html"><strong>📖 覚える</strong><span>英単語・意味・例文を確認</span></a>
+    <a class="menu-btn" href="review.html"><strong>🔁 復習</strong><span>Recall → Answer → ◎△×</span></a>
+    <a class="menu-btn" href="audio.html"><strong>🎧 音声学習</strong><span>画面を見ずに10語を自動再生</span></a>
+    <a class="menu-btn" href="quiz.html"><strong>✏️ クイズ</strong><span>英→日 / 日→英</span></a>
+  </nav>
 
-<section id="quiz" class="screen">
-<div class="topbar"><button class="back" onclick="goHome()">← Home</button><b>クイズ</b><span id="quizNum"></span></div>
-<div class="progress"><i id="quizProg"></i></div><div class="card" id="quizCard"></div>
-</section>
+  <p class="notice">音声は提供された 1781–1800 の音声から、Day 1の10語分を切り出しています。日本語音声はiPhone/iPadの音声読み上げを使用します。</p>
 </div>
 
-<div id="audioOnly" class="audioOnly">
-<div class="ao"><div class="label">🎧 ながら学習 · DAY 1</div><div id="aoBig" class="big">準備</div><div id="aoStatus" class="status">スタートすると、Recall → Answer の順で再生します。</div><button class="primary" onclick="beginAudioSession()">▶ スタート</button><button class="secondary" style="margin-top:10px" onclick="closeAudio()">終了</button></div>
-</div>
-
-<script>
-const words = [{"id": "1781", "word": "tolerate", "meaning": "許容する、我慢する", "example": "His colleagues tolerated his rudeness.", "translation": "彼の同僚たちは彼の無礼な態度を我慢した。"}, {"id": "1782", "word": "reproduce", "meaning": "生殖する、繁殖する；を複製する", "example": "The zoo’s staff were relieved when the pandas began to reproduce.", "translation": "パンダが繁殖し始めて、動物園のスタッフはほっとした。"}, {"id": "1783", "word": "restless", "meaning": "落ち着きのない；変化を求める", "example": "Restless people tend to make more impulsive decisions.", "translation": "落ち着きのない人の方が衝動的な判断をしがちである。"}, {"id": "1784", "word": "undergo", "meaning": "を経験する、経る、受ける", "example": "He underwent many difficulties while traveling in India.", "translation": "彼はインドを旅行中にたくさんの困難を経験した。"}, {"id": "1785", "word": "squash", "meaning": "を押しつぶす、踏みつぶす", "example": "The peasants squashed the grapes with their feet to make wine.", "translation": "小作農たちはワインを作るために足でブドウを踏みつぶした。"}, {"id": "1786", "word": "gateway", "meaning": "（〜への）出入口；道；手段", "example": "IELTS is the gateway to many dreams.", "translation": "IELTSは多くの夢への入口である。"}, {"id": "1787", "word": "alley", "meaning": "小道、横道、路地", "example": "The shop was in a small alley.", "translation": "その店は小さな路地にあった。"}, {"id": "1788", "word": "cooperative", "meaning": "協力的な、協同の", "example": "The workforce was cooperative and well-educated.", "translation": "全従業員が協力的でよく教育されていた。"}, {"id": "1789", "word": "corrupt", "meaning": "汚職の、悪徳の", "example": "There may be more corrupt politicians than clean ones.", "translation": "高潔な政治家よりも汚職まみれの政治家の方が多いかもしれない。"}, {"id": "1790", "word": "pasture", "meaning": "牧草地、牧場、放牧場", "example": "The fields provided pasture for the local cattle.", "translation": "その野原は地元のウシの牧草地となっていた。"}];
-let idx=0, quizIdx=0, quizScore=0, quizQuestions=[], audioRunning=false, audioStop=false;
-const saved=JSON.parse(localStorage.getItem('ieltsDay1')||'{}');
-function save(){localStorage.setItem('ieltsDay1',JSON.stringify(saved));}
-function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function goHome(){audioStop=true;show('home');updateHome();}
-function updateHome(){let n=Object.values(saved).filter(x=>x==='good').length;document.getElementById('learnedCount').textContent=n;document.getElementById('reviewCount').textContent=words.length;document.getElementById('scoreCount').textContent=saved.quizScore||0;}
-function speak(text,lang='ja-JP'){return new Promise(resolve=>{if(!('speechSynthesis' in window)){resolve();return} speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=0.92;u.onend=resolve;u.onerror=resolve;speechSynthesis.speak(u);});}
-function play(file){return new Promise(resolve=>{const a=new Audio(file);a.onended=resolve;a.onerror=resolve;a.play().catch(resolve);});}
-function audioBase(w){return 'audio/'+w.id+'_';}
-async function playA(w){await play(audioBase(w)+'word.mp3');await speak(w.meaning);await play(audioBase(w)+'example.mp3');await speak(w.translation);}
-async function playB(w){await speak(w.meaning);await play(audioBase(w)+'word.mp3');await speak(w.translation);await play(audioBase(w)+'example.mp3');}
-function startLearn(){idx=0;show('learn');renderLearn();}
-function renderLearn(){const w=words[idx];document.getElementById('learnNum').textContent=`${idx+1}/${words.length}`;document.getElementById('learnProg').style.width=((idx+1)/words.length*100)+'%';document.getElementById('learnCard').innerHTML=`
-<div class="num">ID ${w.id}</div><div class="word">${w.word}</div><div class="meaning">${w.meaning}</div>
-<div class="example">${w.example}</div><div class="translation">${w.translation}</div>
-<div class="audioRow"><button class="secondary" onclick="playA(words[idx])">▶ 英→日</button><button class="secondary" onclick="playB(words[idx])">▶ 日→英</button></div>
-<div class="actions"><button class="secondary" onclick="prevLearn()">← 前へ</button><button class="primary" onclick="nextLearn()">次へ →</button></div>`;}
-function prevLearn(){if(idx>0){idx--;renderLearn();}}
-function nextLearn(){if(idx<words.length-1){idx++;renderLearn();}else{goHome();alert('Day 1の「覚えるモード」が終了しました。次は復習か音声学習がおすすめです。');}}
-function startReview(){idx=0;show('review');renderReview();}
-function renderReview(){const w=words[idx];document.getElementById('reviewNum').textContent=`${idx+1}/${words.length}`;document.getElementById('reviewProg').style.width=((idx+1)/words.length*100)+'%';document.getElementById('reviewCard').innerHTML=`
-<div class="num">Recall</div><div class="recall"><div><div class="prompt">${w.meaning}</div><div style="color:#8b837b;margin-top:8px">英単語を思い出してみる</div></div></div>
-<div id="ans" class="answer"><div style="font-size:34px;font-weight:800;margin-top:18px">${w.word}</div><div class="example">${w.example}</div><div class="translation">${w.translation}</div></div>
-<button class="primary" style="margin-top:16px" onclick="document.getElementById('ans').classList.add('show');this.style.display='none'">答えを見る</button>
-<div class="rate"><button class="bad" onclick="rate('bad')">× 出なかった</button><button class="mid" onclick="rate('mid')">△ 少し考えた</button><button class="good" onclick="rate('good')">◎ すぐ出た</button></div>`;}
-function rate(v){saved[words[idx].id]=v;save();if(idx<words.length-1){idx++;renderReview();}else{goHome();alert('復習終了。◎が付いた語は「定着」として記録しました。');}}
-function startQuiz(){quizIdx=0;quizScore=0;quizQuestions=words.map((w,i)=>({w,type:i%2===0?'enja':'jaen'}));quizQuestions.sort(()=>Math.random()-.5);show('quiz');renderQuiz();}
-function renderQuiz(){if(quizIdx>=quizQuestions.length){saved.quizScore=(saved.quizScore||0)+quizScore;save();document.getElementById('quizCard').innerHTML=`<div style="text-align:center;padding:20px"><div style="font-size:14px;color:#777">DAY 1 RESULT</div><div style="font-size:56px;font-weight:800;margin:12px 0">${quizScore}/${quizQuestions.length}</div><p>もう一度やると、問題順が変わります。</p><button class="primary" onclick="startQuiz()">もう一度</button></div>`;document.getElementById('quizNum').textContent='完了';document.getElementById('quizProg').style.width='100%';updateHome();return}
-const q=quizQuestions[quizIdx], w=q.w;document.getElementById('quizNum').textContent=`${quizIdx+1}/${quizQuestions.length}`;document.getElementById('quizProg').style.width=((quizIdx+1)/quizQuestions.length*100)+'%';
-let correct=q.type==='enja'?w.meaning:w.word;let opts=q.type==='enja'?shuffle([w.meaning,...getOthers(w,'meaning')]):shuffle([w.word,...getOthers(w,'word')]);
-document.getElementById('quizCard').innerHTML=`<div class="num">${q.type==='enja'?'英語 → 日本語':'日本語 → 英語'}</div><div class="quizQ">${q.type==='enja'?w.word:w.meaning}</div><div class="choices">${opts.map((o,i)=>`<button class="choice" onclick="answerQuiz(this,${JSON.stringify(o)},${JSON.stringify(correct)})">${o}</button>`).join('')}</div><div id="feedback" class="feedback"></div>`;}
-function getOthers(w,key){return shuffle(words.filter(x=>x.id!==w.id).map(x=>x[key])).slice(0,3)}
-function shuffle(a){return a.sort(()=>Math.random()-.5)}
-function answerQuiz(btn,val,correct){document.querySelectorAll('.choice').forEach(b=>b.disabled=true);const ok=val===correct;btn.classList.add(ok?'correct':'wrong');document.getElementById('feedback').textContent=ok?'✓ 正解':'× 正解は「'+correct+'」';if(ok)quizScore++;setTimeout(()=>{quizIdx++;renderQuiz()},900);}
-function startAudio(){audioStop=false;document.getElementById('audioOnly').classList.add('active');document.querySelector('#audioOnly button.primary').style.display='block';document.getElementById('aoBig').textContent='準備';document.getElementById('aoStatus').textContent='スタートすると、3秒のRecallを入れて再生します。';}
-function closeAudio(){audioStop=true;speechSynthesis.cancel();document.getElementById('audioOnly').classList.remove('active');}
-const wait=ms=>new Promise(r=>setTimeout(r,ms));
-async function beginAudioSession(){if(audioRunning)return;audioRunning=true;audioStop=false;document.querySelector('#audioOnly button.primary').style.display='none';for(let i=0;i<words.length;i++){if(audioStop)break;const w=words[i];document.getElementById('aoBig').textContent=`${i+1} / ${words.length}`;document.getElementById('aoStatus').textContent=`${w.meaning} → 思い出す時間`;await wait(3000);if(audioStop)break;document.getElementById('aoStatus').textContent='英単語';await play(audioBase(w)+'word.mp3');if(audioStop)break;document.getElementById('aoStatus').textContent='意味';await speak(w.meaning);if(audioStop)break;document.getElementById('aoStatus').textContent='例文';await play(audioBase(w)+'example.mp3');if(audioStop)break;document.getElementById('aoStatus').textContent='例文の日本語訳';await speak(w.translation);await wait(900);}audioRunning=false;if(!audioStop){document.getElementById('aoBig').textContent='完了';document.getElementById('aoStatus').textContent='Day 1の10語を終了しました。';document.querySelector('#audioOnly button.secondary').textContent='Homeへ';}}
-updateHome();
-</script>
-</body></html>
+<script type="module" src="js/home.js"></script>
+</body>
+</html>

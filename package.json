@@ -1,0 +1,17 @@
+{
+  "name": "ielts-audio-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "IELTS vocabulary learning app for audio-based study",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/input.css -o ./css/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./src/input.css -o ./css/tailwind.css --watch",
+    "build:words": "node scripts/build-words.js",
+    "build": "npm run build:words && npm run build:css",
+    "serve": "python3 -m http.server 8080"
+  },
+  "devDependencies": {
+    "better-sqlite3": "^13.0.3",
+    "tailwindcss": "^3.4.19"
+  }
+}

@@ -1,0 +1,227 @@
+/**
+ * Tailwind entry point.
+ *
+ * Compiled with `npm run build:css` into css/tailwind.css, which every
+ * page links to directly (no CDN, no runtime build — plain static files
+ * so the app still works from any static host / file://).
+ *
+ * The @layer components below are the same visual components that used
+ * to be hand-written CSS classes in the original index.html (.menu,
+ * .primary, .card, ...). Keeping them as named component classes (built
+ * from Tailwind @apply) instead of inlining utilities everywhere keeps
+ * the HTML readable and the design consistent across the 5 pages.
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-bg text-ink font-sans;
+  }
+  button {
+    font: inherit;
+  }
+}
+
+@layer components {
+  /* Shared page shell: centered column, safe-area aware. */
+  .app-shell {
+    @apply mx-auto w-full max-w-[720px] min-h-[100dvh] px-4 pt-[max(18px,env(safe-area-inset-top))] pb-[max(40px,env(safe-area-inset-bottom))];
+  }
+
+  /* Header shown on the home screen. */
+  .app-header {
+    @apply flex justify-between items-center mb-5;
+  }
+  .app-logo {
+    @apply font-extrabold text-xl;
+  }
+  .app-day-badge {
+    @apply text-xs text-muted bg-[#eee8df] px-2.5 py-1.5 rounded-full;
+  }
+
+  /* Top bar shown on learn / review / quiz pages, with a back link home. */
+  .topbar {
+    @apply flex justify-between items-center mb-3.5;
+  }
+  .back-link {
+    @apply border-0 bg-transparent text-accent2 font-bold py-1.5 cursor-pointer no-underline;
+  }
+
+  /* Progress bar. */
+  .progress-track {
+    @apply h-1.5 bg-[#e8e0d6] rounded-[9px] overflow-hidden my-2 mb-[22px];
+  }
+  .progress-fill {
+    @apply block h-full bg-accent transition-[width] duration-200;
+  }
+
+  /* Home screen hero + stat row + menu grid. */
+  .hero {
+    @apply px-1 pt-5 pb-3;
+  }
+  .hero h1 {
+    @apply text-[30px] mb-2 max-[520px]:text-[27px];
+  }
+  .hero p {
+    @apply text-muted leading-[1.7] m-0;
+  }
+  .stat-row {
+    @apply flex gap-2 my-3.5;
+  }
+  .stat-tile {
+    @apply flex-1 bg-[#f1ece5] rounded-2xl p-3 text-center;
+  }
+  .stat-tile b {
+    @apply block text-xl;
+  }
+  .stat-tile small {
+    @apply text-muted;
+  }
+  .menu-grid {
+    @apply grid grid-cols-2 gap-3 mt-5 max-[520px]:grid-cols-1;
+  }
+  .menu-btn {
+    @apply border border-line bg-card rounded-[20px] p-5 text-left min-h-[120px] cursor-pointer shadow-menu block no-underline;
+  }
+  .menu-btn strong {
+    @apply block text-lg mb-2;
+  }
+  .menu-btn span {
+    @apply text-[13px] text-muted leading-[1.5];
+  }
+  .notice {
+    @apply text-xs text-muted leading-[1.6] mt-4;
+  }
+
+  /* Buttons. */
+  .btn-primary {
+    @apply w-full border-0 rounded-2xl bg-accent text-white py-[15px] font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-secondary {
+    @apply border border-line bg-white rounded-[14px] py-[11px] px-3.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Learn / Review / Quiz card. */
+  .card {
+    @apply bg-card border border-line rounded-3xl px-[22px] py-7 shadow-card;
+  }
+  .card-eyebrow {
+    @apply text-xs text-muted mb-2;
+  }
+  .word-heading {
+    @apply text-4xl font-extrabold tracking-tight max-[520px]:text-[34px];
+  }
+  .meaning-text {
+    @apply text-xl mt-3;
+  }
+  .example-text {
+    @apply mt-[22px] text-lg leading-[1.65];
+  }
+  .translation-text {
+    @apply mt-2 text-muted leading-[1.7];
+  }
+  .audio-row {
+    @apply flex gap-2 mt-[18px];
+  }
+  .audio-row button {
+    @apply flex-1;
+  }
+  .actions-row {
+    @apply flex gap-2 mt-[22px];
+  }
+  .actions-row button {
+    @apply flex-1;
+  }
+
+  /* Review mode: recall box + rating buttons. */
+  .mode-box {
+    @apply bg-[#f1ece5] rounded-2xl px-3.5 py-3 mb-3.5 text-[13px] leading-[1.5];
+  }
+  .mode-box b {
+    @apply text-[15px];
+  }
+  .recall-box {
+    @apply min-h-[180px] flex items-center justify-center text-center border-2 border-dashed border-[#ddd2c6] rounded-[18px] mt-4 p-5;
+  }
+  .recall-prompt {
+    @apply text-[27px] font-extrabold;
+  }
+  .recall-hint {
+    @apply text-[#8b837b] mt-2;
+  }
+  .answer-box {
+    @apply hidden;
+  }
+  .answer-box.show {
+    @apply block;
+  }
+  .answer-word {
+    @apply text-[34px] font-extrabold mt-[18px];
+  }
+  .rate-grid {
+    @apply grid grid-cols-3 gap-2 mt-4;
+  }
+  .rate-btn {
+    @apply border-0 rounded-2xl py-[13px] text-white cursor-pointer font-bold;
+  }
+  .rate-btn.good {
+    @apply bg-good;
+  }
+  .rate-btn.mid {
+    @apply bg-mid;
+  }
+  .rate-btn.bad {
+    @apply bg-bad;
+  }
+
+  /* Quiz. */
+  .quiz-question {
+    @apply text-2xl font-extrabold leading-[1.5];
+  }
+  .quiz-choices {
+    @apply grid gap-2.5 mt-[18px];
+  }
+  .quiz-choice {
+    @apply border border-line bg-white rounded-2xl p-3.5 text-left cursor-pointer disabled:cursor-not-allowed;
+  }
+  .quiz-choice.correct {
+    @apply border-good bg-[#eef7f1];
+  }
+  .quiz-choice.wrong {
+    @apply border-bad bg-[#fbefed];
+  }
+  .quiz-feedback {
+    @apply mt-3.5 font-bold min-h-[24px];
+  }
+  .quiz-result {
+    @apply text-center p-5;
+  }
+  .quiz-result .quiz-result-label {
+    @apply text-sm text-muted;
+  }
+  .quiz-result .quiz-result-score {
+    @apply text-[56px] font-extrabold my-3;
+  }
+
+  /* Full-screen audio-only session (audio.html). */
+  .audio-session {
+    @apply min-h-[100dvh] bg-[#17232c] text-white flex items-center justify-center p-7;
+  }
+  .audio-session-inner {
+    @apply w-full max-w-[520px] text-center;
+  }
+  .audio-session-label {
+    @apply text-[#b9c5cc] text-[13px];
+  }
+  .audio-session-big {
+    @apply text-[42px] font-extrabold my-5;
+  }
+  .audio-session-status {
+    @apply min-h-[50px] text-[#dbe4e9] leading-[1.7];
+  }
+  .audio-session-actions button {
+    @apply mt-[22px] w-full;
+  }
+}

@@ -1,0 +1,27 @@
+<!doctype html>
+<!-- 復習モード: Recall → Answer → ◎/△/× self-rating, saved to localStorage. -->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f4ef">
+<title>復習 — IELTS Vocabulary</title>
+<link rel="stylesheet" href="css/tailwind.css">
+</head>
+<body>
+<div class="app-shell">
+  <div class="topbar">
+    <a class="back-link" href="index.html">← Home</a>
+    <b>復習モード</b>
+    <span id="reviewNum"></span>
+  </div>
+  <div class="progress-track"><i id="reviewProg" class="progress-fill"></i></div>
+  <div class="mode-box"><b>Recall → Answer</b><br>まず答えを頭の中で思い出してから「答えを見る」。</div>
+  <div class="card" id="reviewCard">
+    <p class="text-muted">読み込み中…</p>
+  </div>
+</div>
+
+<script type="module" src="js/review.js"></script>
+</body>
+</html>
