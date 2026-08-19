@@ -100,7 +100,11 @@
     @apply w-full border-0 rounded-2xl bg-accent text-white py-[15px] font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
   }
   .btn-secondary {
-    @apply border border-line bg-white rounded-[14px] py-[11px] px-3.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+    /* text-ink is explicit (not inherited) because this class is also used
+       inside .audio-session, whose dark background sets text-white on
+       everything below it — without this a white button rendered white
+       text on its own white background. */
+    @apply border border-line bg-white text-ink rounded-[14px] py-[11px] px-3.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   /* Learn / Review / Quiz card. */

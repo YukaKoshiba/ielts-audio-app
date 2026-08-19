@@ -1,0 +1,27 @@
+<!doctype html>
+<!-- 音声学習: full-screen, hands-free playback of all 10 words in sequence. -->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17232c">
+<title>音声学習 — IELTS Vocabulary</title>
+<link rel="stylesheet" href="css/tailwind.css">
+</head>
+<body>
+<div class="audio-session">
+  <div class="audio-session-inner">
+    <div id="aoLabel" class="audio-session-label">🎧 ながら学習 · DAY 1</div>
+    <div id="aoBig" class="audio-session-big">準備</div>
+    <div id="aoStatus" class="audio-session-status">スタートすると、Recall → Answer の順で再生します。</div>
+    <div id="aoWarning" class="audio-session-status text-[#e0a95c]" hidden></div>
+    <div class="audio-session-actions">
+      <button type="button" id="aoStart" class="btn-primary">▶ スタート</button>
+      <a class="btn-secondary block text-center no-underline mt-2.5" href="index.html">終了して Homeへ</a>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/audio-session.js"></script>
+</body>
+</html>
