@@ -17,9 +17,10 @@
  * reads the answer back out of the `options` array this module already
  * holds in memory (see renderQuiz/handleChoiceClick below).
  */
-import { loadDay, dayFromQuery } from './words.js';
+import { loadDay, dayFromQuery, audioBase } from './words.js';
 import { store } from './storage.js';
 import { escapeHtml, shuffle } from './util.js';
+import { run, stopAll } from './audio-controller.js';
 
 const day = dayFromQuery();
 let words = [];
@@ -29,6 +30,10 @@ let quizQuestions = [];
 /** Choice buttons for the current question, in DOM order — read by index on click. */
 let currentOptions = [];
 let currentCorrectAnswer = '';
+/** Whether the current question has had a wrong attempt yet — only a
+ *  clean first-try answer counts toward quizScore, since retrying is
+ *  now unlimited (see handleChoiceClick). */
+let hasMistakeThisQuestion = false;
 
 const quizNum = document.getElementById('quizNum');
 const quizProg = document.getElementById('quizProg');
@@ -60,6 +65,7 @@ function otherChoices(word, key) {
 
 function renderQuiz() {
   if (quizIdx >= quizQuestions.length) {
+    stopAll();
     store.addQuizScore(quizScore);
     quizCard.innerHTML = `
       <div class="quiz-result">
@@ -79,6 +85,7 @@ function renderQuiz() {
 
   const q = quizQuestions[quizIdx];
   const w = q.w;
+  hasMistakeThisQuestion = false;
   quizNum.textContent = `${quizIdx + 1}/${quizQuestions.length}`;
   quizProg.style.width = `${((quizIdx + 1) / quizQuestions.length) * 100}%`;
 
@@ -98,21 +105,35 @@ function renderQuiz() {
     </div>
     <div id="feedback" class="quiz-feedback"></div>
   `;
+
+  // Play the word's English pronunciation at the start of every question.
+  // Browsers block un-gestured autoplay, so the very first question (page
+  // load) may play silently — every later question is triggered from a
+  // click (次へ/もう一度), which counts as a user gesture and plays fine.
+  run([{ label: 'word', run: (ctx) => ctx.playFile(`${audioBase(w)}word.mp3`) }], {
+    media: { title: w.word, artist: 'クイズ' },
+  });
 }
 
 function handleChoiceClick(btn) {
   const chosen = currentOptions[Number(btn.dataset.index)];
   const isCorrect = chosen === currentCorrectAnswer;
 
-  quizCard.querySelectorAll('.quiz-choice').forEach((b) => (b.disabled = true));
-  btn.classList.add(isCorrect ? 'correct' : 'wrong');
-  if (isCorrect) quizScore++;
-
-  const isLast = quizIdx === quizQuestions.length - 1;
-  document.getElementById('feedback').innerHTML = `
-    <span>${isCorrect ? '✓ 正解' : `× 正解は「${escapeHtml(currentCorrectAnswer)}」`}</span>
-    <button type="button" class="btn-primary mt-3" data-action="next">${isLast ? '結果を見る →' : '次へ →'}</button>
-  `;
+  if (isCorrect) {
+    if (!hasMistakeThisQuestion) quizScore++;
+    quizCard.querySelectorAll('.quiz-choice').forEach((b) => (b.disabled = true));
+    btn.classList.add('correct');
+    const isLast = quizIdx === quizQuestions.length - 1;
+    document.getElementById('feedback').innerHTML = `
+      <span>✓ 正解</span>
+      <button type="button" class="btn-primary mt-3" data-action="next">${isLast ? '結果を見る →' : '次へ →'}</button>
+    `;
+  } else {
+    hasMistakeThisQuestion = true;
+    btn.classList.add('wrong');
+    btn.disabled = true;
+    document.getElementById('feedback').textContent = '× 不正解。もう一度選んでみましょう。';
+  }
 }
 
 quizCard.addEventListener('click', (e) => {
@@ -129,5 +150,7 @@ quizCard.addEventListener('click', (e) => {
   const retryBtn = e.target.closest('[data-action="retry"]');
   if (retryBtn) startQuiz();
 });
+
+window.addEventListener('pagehide', stopAll);
 
 init();
