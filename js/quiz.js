@@ -106,21 +106,24 @@ function handleChoiceClick(btn) {
 
   quizCard.querySelectorAll('.quiz-choice').forEach((b) => (b.disabled = true));
   btn.classList.add(isCorrect ? 'correct' : 'wrong');
-  document.getElementById('feedback').textContent = isCorrect
-    ? '✓ 正解'
-    : `× 正解は「${currentCorrectAnswer}」`;
   if (isCorrect) quizScore++;
 
-  setTimeout(() => {
-    quizIdx++;
-    renderQuiz();
-  }, 900);
+  const isLast = quizIdx === quizQuestions.length - 1;
+  document.getElementById('feedback').innerHTML = `
+    <span>${isCorrect ? '✓ 正解' : `× 正解は「${escapeHtml(currentCorrectAnswer)}」`}</span>
+    <button type="button" class="btn-primary mt-3" data-action="next">${isLast ? '結果を見る →' : '次へ →'}</button>
+  `;
 }
 
 quizCard.addEventListener('click', (e) => {
   const choiceBtn = e.target.closest('.quiz-choice');
   if (choiceBtn && !choiceBtn.disabled) {
     handleChoiceClick(choiceBtn);
+    return;
+  }
+  if (e.target.closest('[data-action="next"]')) {
+    quizIdx++;
+    renderQuiz();
     return;
   }
   const retryBtn = e.target.closest('[data-action="retry"]');
