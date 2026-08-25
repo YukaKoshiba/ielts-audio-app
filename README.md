@@ -4,8 +4,6 @@ IELTS vocabulary learning app for audio-based study.
 
 ## Overview
 
-## Overview
-
 This project started as a personal tool for studying English vocabulary for the IELTS exam.
 
 While raising a child, I found it difficult to set aside dedicated time for studying. However, I realized that although my hands were often occupied, I still had time when my ears were free.
